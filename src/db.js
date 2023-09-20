@@ -3,7 +3,7 @@ const cpu = require('./schema')
 
 
 
-const dbURI = 'mongodb:/127.0.0.1:27017/intel'
+const dbURI = 'mongodb://127.0.0.1:27017/intel'
 
 const db = mongoose.connection
 
@@ -32,18 +32,33 @@ db.close()
 })
 
 function insertOne(data){
+//console.log(data)
+  new cpu({data:data}).save()
+    .then((c)=>{
+      console.log(`new data entry : ${c}`)
+    }).catch(err=>{
+      console.error(err)
+    }) 
+}
 
-console.log(data)
-new cpu({data:data}).save()
-  .then((err,c)=>{
-    console.log(`new data`)
-  }).catch(err=>{
-    console.error(err)
+function insertMany(data) {
+  const arr =  data.map((item) => {
+    return{data:item}
+  })
+//  console.log(arr)
+  
+  cpu.insertMany()
+    //.insertMany()
+    .then((c)=>{
+      console.log('db has ben filled')
+    }).catch(err=>{
+      console.error('error while save data :',err)
     }) 
 }
 
 module.exports = {
 connectMongodb : ()=> mongoose.connect(dbURI,{}),
 close : ()=> mongoose.connection.close(),
-insert: insertOne,
+insert : insertOne,
+insertAll : insertMany,
 }

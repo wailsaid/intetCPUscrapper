@@ -1,86 +1,66 @@
+
 const app = require('express')()
+
+
 const scraper = require('./src/scraper')
+const cli = require('./src/cli')
+const db = require('./src/db')
 
-
-//const db = require('./db')
-
-//db.connectMongodb()
-
-
-
-var a = {
-'name': 'i7'
-}
+const PORT = process.env.port || 3000
 
 
 app.get('/',(req,res)=>{
-
-a['speed']= 12
- res.json(a)
-
+//  scraper.getDATA().then(data=>{
+//    res.json(data)
+//  }).catch(err=>console.error(err))
 })
 
-
-app.get('/all',(req,res)=>{
- 
-  scraper.getDATA().then(data=>{
-    res.json(data)
-  }).catch(err=>console.error(err))
-
-})
-
-app.get('/:rank',(req,res)=>{
-  const cpuR = req.params.rank
+app.get('/:cpu',(req,res)=>{
+  const cpuR = req.params.cpu
   console.log(cpuR)
-  res.end()
-})
-
-app.listen(3000,()=>{
-  console.log('listing on port 3000',{})
-  console.log('>>')
+  res.end(cpuR)
 })
 
 
-
-
-const readline = require('readline')
-
-// Create a readline interface for interactive commands
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
 // Define a function to execute a command
 function executeCommand(command) {
   switch (command) {
-    case '' : 
-      console.log('')
-    break
-    case 'cleanDB':
-      // Add your logic to clean the database
-      console.log('Cleaning the database...');
-      break;
+    case 'serve' :  
+     var server = app.listen(PORT,()=>console.log('the web service is listing on port 3000'))
+      break
+
+    case 'stop':
+      server.close(()=>console.log('the web service has stoped'))
+      break
+
+    case 'startdb':
+      
+      db.connectMongodb()
+      break
+
+
+    case 'initDB':
+      db.connectMongodb()
+      scraper.getDATA().then(data=>{
+        db.insertAll(data)
+      }).catch(err=>console.error('Error while getting data :',err))
+      break
+
+
     default:
       console.log('Unknown command:', command);
   }
 }
 
-// Start the interactive CLI
-rl.setPrompt('\n>> ');
-rl.prompt();
 
-rl.on('line', (input) => {
+cli.on('line', (input) => {
   const command = input.trim();
   if (command === 'exit') {
-    rl.close();
+    cli.close();
   } else {
     executeCommand(command);
-    rl.prompt();
+    cli.prompt();
   }
-});
-
-rl.on('close', () => {
-  console.log('CLI closed');
-  process.exit(0);
-});
+})
+  
