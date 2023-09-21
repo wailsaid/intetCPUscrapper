@@ -59,8 +59,9 @@ function insertMany(d) {
 
 }
 
-function retrive({}) {
-  return cpu.find({})
+function retrive(q) {
+ return cpu.find(q)
+    .then(c=>c)
     .catch(err=>console.error(err))
 }
 module.exports = {
@@ -69,6 +70,6 @@ connectMongodb : ()=> mongoose.connect(dbURI,{}),
 close : ()=> mongoose.connection.close(),
 insert : insertOne,
 insertAll : insertMany,
- 
+Find : retrive 
 }
  
