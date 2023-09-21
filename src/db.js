@@ -1,14 +1,11 @@
 const mongoose = require('mongoose')
-const cpu = require('./schema')
-
-
 
 const dbURI = 'mongodb://127.0.0.1:27017/intel'
 
 const db = mongoose.connection
 
 db.on('connected',()=>{  
-console.log('connection established')
+  console.log('connection established')
 })
 
 db.on('disconnected',()=>{  
@@ -31,8 +28,19 @@ db.close()
     })
 })
 
+
+
+
+const schema = mongoose.Schema({
+data : mongoose.Schema.Types.Mixed,
+})
+
+const cpu = mongoose.model('cpu',schema)
+
+
 function insertOne(data){
 //console.log(data)
+
   new cpu({data:data}).save()
     .then((c)=>{
       console.log(`new data entry : ${c}`)
@@ -41,19 +49,17 @@ function insertOne(data){
     }) 
 }
 
-function insertMany(data) {
-  const arr =  data.map((item) => {
-    return{data:item}
-  })
-//  console.log(arr)
-  
-  cpu.insertMany()
-    //.insertMany()
-    .then((c)=>{
-      console.log('db has ben filled')
-    }).catch(err=>{
-      console.error('error while save data :',err)
+function insertMany(d) {
+  //data.forEach(c => {
+ // new cpu({data:c}).save()
+   //   .catch(err=>console.error(err))
+  // });
+  const cpuarr = d.map(c=>{return {data:c}})
+  cpu.insertMany(cpuarr)
+    .catch(err=>{
+      console.error(err)
     }) 
+
 }
 
 module.exports = {

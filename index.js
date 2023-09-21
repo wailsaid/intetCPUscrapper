@@ -27,29 +27,37 @@ app.get('/:cpu',(req,res)=>{
 function executeCommand(command) {
   switch (command) {
     case 'serve' :  
-     var server = app.listen(PORT,()=>console.log('the web service is listing on port 3000'))
+     var server = app.listen(PORT,()=>{
+        console.log('the web service is listing on port 3000')
+        cli.prompt()
+      })
       break
 
     case 'stop':
-      server.close(()=>console.log('the web service has stoped'))
+      server.close(()=>{
+      console.log('the web service has stoped')
+        cli.prompt()
+      })
       break
 
     case 'startdb':
-      
       db.connectMongodb()
+      cli.prompt()
       break
 
 
     case 'initDB':
       db.connectMongodb()
-      scraper.getDATA().then(data=>{
-        db.insertAll(data)
+      scraper.getDATA().then(async data=>{
+        await db.insertAll(data)
+        console.log('done')
+        cli.prompt()
       }).catch(err=>console.error('Error while getting data :',err))
       break
 
-
     default:
       console.log('Unknown command:', command);
+      cli.prompt()
   }
 }
 
@@ -60,7 +68,7 @@ cli.on('line', (input) => {
     cli.close();
   } else {
     executeCommand(command);
-    cli.prompt();
+   // cli.prompt();
   }
 })
   
