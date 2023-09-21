@@ -50,10 +50,7 @@ function insertOne(data){
 }
 
 function insertMany(d) {
-  //data.forEach(c => {
- // new cpu({data:c}).save()
-   //   .catch(err=>console.error(err))
-  // });
+ 
   const cpuarr = d.map(c=>{return {data:c}})
   cpu.insertMany(cpuarr)
     .catch(err=>{
@@ -62,9 +59,16 @@ function insertMany(d) {
 
 }
 
+function retrive({}) {
+  return cpu.find({})
+    .catch(err=>console.error(err))
+}
 module.exports = {
+ 
 connectMongodb : ()=> mongoose.connect(dbURI,{}),
 close : ()=> mongoose.connection.close(),
 insert : insertOne,
 insertAll : insertMany,
+ 
 }
+ 
